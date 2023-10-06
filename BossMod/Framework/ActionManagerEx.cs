@@ -62,7 +62,7 @@ namespace BossMod
         public ActionID CastAction => new(CastActionType, CastActionID);
         public unsafe float CastTimeElapsed => Utils.ReadField<float>(_inst, 0x30);
         public unsafe float CastTimeTotal => Utils.ReadField<float>(_inst, 0x34);
-        public float CastTimeRemaining => CastSpellID != 0 ? CastTimeTotal - CastTimeElapsed : 0;
+        public float CastTimeRemaining => CastSpellID != 0 ? (0.3 + CastTimeTotal - CastTimeElapsed) : 0;
         public unsafe ulong CastTargetID => Utils.ReadField<ulong>(_inst, 0x38);
         public unsafe Vector3 CastTargetPos => Utils.ReadField<Vector3>(_inst, 0x40);
 
