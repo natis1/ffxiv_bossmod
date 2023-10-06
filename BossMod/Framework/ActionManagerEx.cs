@@ -239,7 +239,12 @@ namespace BossMod
             _updateHook.Original(self);
 
             // check whether movement is safe; block movement if not and if desired
-            MoveMightInterruptCast &= CastTimeRemaining > 0; // previous cast could have ended without action effect
+            var castT = CastTimeRemaining;
+            if (InputOverride.StartedMovement()) {
+                castT -= 0.3
+            }
+            
+            MoveMightInterruptCast &= castT > 0; // previous cast could have ended without action effect
             MoveMightInterruptCast |= imminentActionAdj && CastTimeRemaining <= 0 && AnimationLock < 0.1f && GetAdjustedCastTime(imminentActionAdj) > 0 && GCD() < 0.1f; // if we're not casting, but will start soon, moving might interrupt future cast
             bool blockMovement = Config.PreventMovingWhileCasting && MoveMightInterruptCast;
 
