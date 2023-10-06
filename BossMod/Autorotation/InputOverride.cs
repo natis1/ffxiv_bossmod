@@ -30,6 +30,8 @@ namespace BossMod
         private delegate ref int GetRefValueDelegate(int vkCode);
         private GetRefValueDelegate _getKeyRef;
 
+        private bool _pressedMovement = false;
+
         public unsafe InputOverride()
         {
             _kbprocHook = Service.Hook.HookFromSignature<KbprocDelegate>("48 89 5C 24 08 55 56 57 41 56 41 57 48 8D 6C 24 B0 48 81 EC 50 01 00 00 48 8B 05 ?? ?? ?? ?? 48 33 C4 48 89 45 40 4D 8B F9 49 8B D8 81 FA 00 01 00 00", KbprocDetour); // note: look for callers of GetKeyboardState
@@ -54,6 +56,23 @@ namespace BossMod
         public bool IsMoveRequested() => IsWindowActive() && (ReallyPressed(VirtualKey.W) || ReallyPressed(VirtualKey.S) || ReallyPressed(VirtualKey.A) || ReallyPressed(VirtualKey.D));
 
         public bool IsBlocked() => _movementBlocked;
+
+        public bool StartedMovement()
+        {
+            if (_pressedMovement) {
+                if (ReallyPressed(VirtualKey.W) || ReallyPressed(VirtualKey.A) || ReallyPressed(VirtualKey.D) || ReallyPressed(VirtualKey.S)) {
+                    return false;
+                } else {
+                    _pressedMovement = false;
+                    return false;
+                }
+            }
+            if (ReallyPressed(VirtualKey.W) || ReallyPressed(VirtualKey.A) || ReallyPressed(VirtualKey.D) || ReallyPressed(VirtualKey.S)) {
+                _pressedMovement = true;
+                return true;
+            }
+            return false;
+        }
 
         public void BlockMovement()
         {
